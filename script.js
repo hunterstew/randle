@@ -7,6 +7,7 @@ const guessGrid = document.querySelector("[data-guess-grid]")
 const offsetFromDate = new Date(2022, 0, 1)
 const msOffset = Date.now() - offsetFromDate
 const dayOffset = msOffset / 1000 / 60 / 60 / 24
+const letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
 const a = 577
 const c = 123
 const m = targetWords.length
@@ -112,6 +113,11 @@ function submitGuess() {
 function updateTargetWord() {
     lcg_index = (a * lcg_index + c) % m;
     targetWord = targetWords[lcg_index];
+
+    letters.forEach(letter => {
+        const key = keyboard.querySelector(`[data-key="${letter}"i]`)
+        key.classList.remove("correct", "wrong-location", "wrong")
+    })
 }
 
 function flipTile(tile, index, array, is_past_tiles, guess) {
@@ -128,12 +134,18 @@ function flipTile(tile, index, array, is_past_tiles, guess) {
       if (targetWord[index % 5] === letter) {
         tile.dataset.state = "correct"
         key.classList.add("correct")
+        key.classList.remove("wrong-location", "wrong")
       } else if (targetWord.includes(letter)) {
         tile.dataset.state = "wrong-location"
-        key.classList.add("wrong-location")
+        if (! key.classList.contains("correct")) {
+            key.classList.add("wrong-location")
+            key.classList.remove("wrong")
+        }
       } else {
         tile.dataset.state = "wrong"
-        key.classList.add("wrong")
+        if (!(key.classList.contains("correct") || key.classList.contains("wrong-location"))) {
+            key.classList.add("wrong")
+        }
       }
 
       if ((index === array.length - 1) && is_past_tiles) {
